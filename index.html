@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%231A1A1A'/%3E%3C/svg%3E">
+<title>配件專案成效追蹤</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #f5f5f7;
+  --card: #ffffff;
+  --card2: #f9f9fb;
+  --border: #e5e5ea;
+  --border2: #d1d1d6;
+  --text: #1d1d1f;
+  --sub: #86868b;
+  --blue: #0071e3;
+  --green: #1a7a3e;
+  --red: #d70015;
+  --orange: #bf5900;
+  --purple: #6e3ca5;
+  --teal: #0077b6;
+  --accent: #0071e3;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 0 0 60px;
+}
+
+.wrap { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 0 16px; }
+
+/* ── HEADER ── */
+header {
+  padding: 40px 16px 32px;
+  border-bottom: 1px solid var(--border);
+  background: #fff;
+  position: relative; overflow: hidden;
+}
+header::after {
+  content: '';
+  position: absolute; top: -80px; right: -60px;
+  width: 320px; height: 320px;
+  background: radial-gradient(circle, rgba(0,113,227,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.header-inner { max-width: 900px; margin: 0 auto; }
+.header-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; letter-spacing: 1px; color: #0071e3;
+  margin-bottom: 10px;
+}
+header h1 {
+  font-size: 30px; font-weight: 900; line-height: 1.2;
+  color: #1d1d1f;
+}
+.header-meta {
+  display: flex; gap: 16px; margin-top: 14px; flex-wrap: wrap; align-items: center;
+}
+.meta-chip {
+  font-size: 11px; font-family: 'DM Mono', monospace;
+  color: var(--sub); background: #f5f5f7;
+  border: 1px solid var(--border); border-radius: 6px;
+  padding: 3px 10px;
+}
+.phase-badge {
+  font-size: 11px; font-weight: 700;
+  padding: 4px 12px; border-radius: 20px;
+  background: #e8f0fe; color: #0071e3;
+  border: 1px solid #b8d0f5;
+}
+
+/* ── OVERALL SCORE ── */
+.score-section { padding: 28px 0 8px; }
+.score-card {
+  background: #fff;
+  border: 1px solid #e5e5ea;
+  border-radius: 20px;
+  padding: 28px 28px 24px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 28px;
+  align-items: center;
+}
+@media(max-width:600px){ .score-card { grid-template-columns:1fr; gap:16px; } }
+
+.score-ring-wrap { position: relative; width: 110px; height: 110px; flex-shrink: 0; }
+.score-ring-wrap svg { transform: rotate(-90deg); }
+.score-ring-bg { fill: none; stroke: #e5e5ea; stroke-width: 8; }
+.score-ring-fill { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1); }
+.score-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.score-num { font-size: 28px; font-weight: 900; line-height: 1; color: var(--green); }
+.score-max { font-size: 11px; color: var(--sub); margin-top: 2px; }
+
+.score-right h2 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.score-desc { font-size: 13px; color: var(--sub); line-height: 1.7; margin-bottom: 14px; }
+.score-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.score-pill {
+  font-size: 11px; font-weight: 600;
+  padding: 4px 12px; border-radius: 20px;
+}
+.pill-green  { background: #edfaf3; color: #1a7a3e; border: 1px solid #b4e6cd; }
+.pill-orange { background: #fff4e0; color: #bf5900; border: 1px solid #ffd280; }
+.pill-red    { background: #ffeaea; color: #d70015; border: 1px solid #f5b8bb; }
+.pill-blue   { background: #e8f0fe; color: #0071e3; border: 1px solid #b8d0f5; }
+
+/* ── SECTION ── */
+.section-head {
+  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: #86868b; font-family: 'DM Mono', monospace;
+  margin: 32px 0 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-head::after {
+  content: ''; flex: 1; height: 1px; background: #e5e5ea;
+}
+
+/* ── KPI GRID ── */
+.kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+@media(max-width:700px){ .kpi-grid { grid-template-columns: repeat(2,1fr); } }
+
+.kpi-card {
+  background: #fff;
+  border: 1px solid #e5e5ea;
+  border-radius: 16px;
+  padding: 18px 16px;
+  position: relative; overflow: hidden;
+  cursor: pointer;
+  transition: border-color .2s, transform .15s;
+}
+.kpi-card:hover { border-color: rgba(0,113,227,0.3); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+.kpi-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  border-radius: 2px 2px 0 0;
+}
+.kpi-blue::before   { background: linear-gradient(90deg, var(--blue), transparent); }
+.kpi-green::before  { background: linear-gradient(90deg, var(--green), transparent); }
+.kpi-orange::before { background: linear-gradient(90deg, var(--orange), transparent); }
+.kpi-purple::before { background: linear-gradient(90deg, var(--purple), transparent); }
+.kpi-teal::before   { background: linear-gradient(90deg, var(--teal), transparent); }
+.kpi-red::before    { background: linear-gradient(90deg, var(--red), transparent); }
+
+.kpi-label { font-size: 11px; color: var(--sub); margin-bottom: 8px; }
+.kpi-value { font-size: 26px; font-weight: 900; line-height: 1; }
+.kpi-blue .kpi-value   { color: var(--blue); }
+.kpi-green .kpi-value  { color: var(--green); }
+.kpi-orange .kpi-value { color: var(--orange); }
+.kpi-purple .kpi-value { color: var(--purple); }
+.kpi-teal .kpi-value   { color: var(--teal); }
+.kpi-red .kpi-value    { color: var(--red); }
+
+.kpi-sub { font-size: 11px; color: var(--sub); margin-top: 6px; }
+.kpi-delta {
+  font-size: 11px; font-weight: 700; font-family: 'DM Mono', monospace;
+  margin-top: 4px;
+}
+.delta-up   { color: var(--green); }
+.delta-down { color: var(--red); }
+.delta-flat { color: var(--sub); }
+
+/* ── PROGRESS MODULES ── */
+.module-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media(max-width:620px){ .module-grid { grid-template-columns: 1fr; } }
+
+.module-card {
+  background: #fff;
+  border: 1px solid #e5e5ea;
+  border-radius: 16px;
+  padding: 20px;
+}
+.module-title {
+  font-size: 13px; font-weight: 700; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.module-icon {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; font-size: 14px;
+  flex-shrink: 0;
+}
+.icon-blue   { background: rgba(79,142,255,.15); }
+.icon-green  { background: rgba(48,209,88,.15); }
+.icon-orange { background: rgba(255,159,10,.15); }
+.icon-purple { background: rgba(191,90,242,.15); }
+
+.progress-item { margin-bottom: 12px; }
+.progress-item:last-child { margin-bottom: 0; }
+.progress-label {
+  display: flex; justify-content: space-between;
+  font-size: 12px; margin-bottom: 5px;
+}
+.progress-name { color: var(--text); }
+.progress-val  { font-family: 'DM Mono', monospace; color: var(--sub); font-size: 11px; }
+.progress-track {
+  height: 5px; background: #e5e5ea;
+  border-radius: 99px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; border-radius: 99px;
+  transition: width 1s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── MILESTONE TIMELINE ── */
+.timeline { position: relative; padding-left: 20px; }
+.timeline::before {
+  content: ''; position: absolute; left: 6px; top: 6px; bottom: 6px;
+  width: 1px; background: #e5e5ea;
+}
+.milestone {
+  position: relative; margin-bottom: 18px;
+  padding-left: 22px;
+}
+.milestone:last-child { margin-bottom: 0; }
+.milestone-dot {
+  position: absolute; left: -20px; top: 3px;
+  width: 12px; height: 12px; border-radius: 50%;
+  border: 2px solid;
+  display: flex; align-items: center; justify-content: center;
+}
+.dot-done    { background: var(--green); border-color: var(--green); }
+.dot-active  { background: var(--blue); border-color: var(--blue); box-shadow: 0 0 8px rgba(79,142,255,.5); }
+.dot-pending { background: transparent; border-color: var(--sub); }
+
+.milestone-date {
+  font-family: 'DM Mono', monospace; font-size: 10px; color: var(--sub);
+  margin-bottom: 2px;
+}
+.milestone-title { font-size: 13px; font-weight: 600; }
+.milestone-desc  { font-size: 11px; color: var(--sub); margin-top: 3px; line-height: 1.5; }
+.milestone-tag {
+  display: inline-block; margin-top: 5px;
+  font-size: 10px; font-weight: 700; padding: 2px 8px;
+  border-radius: 20px;
+}
+.tag-done    { background: rgba(48,209,88,.15);  color: var(--green); }
+.tag-active  { background: rgba(79,142,255,.15); color: var(--blue); }
+.tag-pending { background: rgba(107,107,128,.15); color: var(--sub); }
+
+/* ── CHECK LIST ── */
+.checklist { display: flex; flex-direction: column; gap: 8px; }
+.check-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 12px; line-height: 1.5;
+  padding: 10px 12px; border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer; transition: .15s;
+}
+.check-item:hover { background: #f5f5f7; }
+.check-item.done  { border-color: rgba(48,209,88,.15); background: rgba(48,209,88,.04); }
+.check-item.todo  { border-color: #e5e5ea; background: #fafafa; }
+.check-item.warn  { border-color: rgba(255,159,10,.2); background: rgba(255,159,10,.04); }
+
+.check-dot {
+  width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center; font-size: 9px;
+}
+.check-item.done .check-dot { background: var(--green); color: #fff; }
+.check-item.todo .check-dot { border: 1.5px solid #c7c7cc; }
+.check-item.warn .check-dot { background: var(--orange); color: #fff; }
+
+.check-text { flex: 1; }
+.check-title { font-weight: 600; color: var(--text); }
+.check-sub   { color: var(--sub); font-size: 11px; margin-top: 1px; }
+
+/* ── INLINE EDITABLE ── */
+[contenteditable] {
+  outline: none; border-radius: 4px;
+  padding: 1px 4px; transition: .15s;
+}
+[contenteditable]:focus {
+  background: rgba(0,113,227,.1);
+  box-shadow: 0 0 0 1px rgba(0,113,227,.35);
+}
+[contenteditable]:hover:not(:focus) { background: rgba(0,0,0,0.04); }
+
+/* ── INSIGHT CARDS ── */
+.insight-list { display: flex; flex-direction: column; gap: 10px; }
+.insight {
+  border-radius: 12px; padding: 14px 16px;
+  border-left: 3px solid;
+  font-size: 13px; line-height: 1.6;
+}
+.insight-crit  { background: #fff5f5; border-color: #d70015; }
+.insight-warn  { background: #fff8f0; border-color: #bf5900; }
+.insight-good  { background: #f0faf5; border-color: #1a7a3e; }
+.insight-info  { background: #f0f5ff; border-color: #0071e3; }
+
+.insight-tag  { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; font-family: 'DM Mono', monospace; }
+.insight-crit .insight-tag  { color: var(--red); }
+.insight-warn .insight-tag  { color: var(--orange); }
+.insight-good .insight-tag  { color: var(--green); }
+.insight-info .insight-tag  { color: var(--blue); }
+.insight-body  { color: #1d1d1f; font-size: 13px; }
+.insight-body b { font-weight: 700; }
+
+/* ── NEXT ACTIONS ── */
+.action-list { display: flex; flex-direction: column; gap: 8px; }
+.action-item {
+  display: flex; align-items: center; gap: 12px;
+  background: #fafafa; border: 1px solid #e5e5ea;
+  border-radius: 12px; padding: 12px 14px;
+  cursor: pointer; transition: .15s;
+}
+.action-item:hover { border-color: rgba(0,113,227,.3); background: #f0f5ff; }
+.action-num {
+  width: 24px; height: 24px; border-radius: 8px;
+  font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.action-num.high   { background: #ffeaea; color: #d70015; }
+.action-num.mid    { background: #fff4e0; color: #bf5900; }
+.action-num.low    { background: #e8f0fe; color: #0071e3; }
+
+.action-content { flex: 1; }
+.action-title   { font-size: 13px; font-weight: 600; }
+.action-desc    { font-size: 11px; color: var(--sub); margin-top: 2px; }
+.action-due     { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--sub); flex-shrink: 0; }
+
+/* ── SAVE / EXPORT ── */
+.bottom-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: rgba(255,255,255,.95); backdrop-filter: blur(16px);
+  border-top: 1px solid #e5e5ea;
+  padding: 10px 20px;
+  display: flex; align-items: center; gap: 10px; z-index: 100;
+}
+.bottom-bar .label { font-size: 12px; color: #86868b; flex: 1; font-family: 'DM Mono', monospace; }
+.btn {
+  padding: 8px 18px; border-radius: 10px; font-size: 12px; font-weight: 700;
+  border: none; cursor: pointer; font-family: 'Noto Sans TC', sans-serif;
+  transition: .15s;
+}
+.btn-primary { background: var(--blue); color: #fff; }
+.btn-primary:hover { background: #3a7aed; }
+.btn-ghost   { background: #fff; color: #1d1d1f; border: 1px solid #d1d1d6; }
+.btn-ghost:hover { background: #f5f5f7; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; top: 20px; right: 20px;
+  background: #fafafa; border: 1px solid #e5e5ea;
+  color: var(--text); padding: 10px 16px; border-radius: 10px;
+  font-size: 13px; font-weight: 600; z-index: 9999;
+  opacity: 0; transform: translateY(-8px); transition: .3s; pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* ── PERIOD TRACKER BAR ── */
+.period-bar-wrap {
+  background: #fff; border: 1px solid #e5e5ea;
+  border-radius: 16px; padding: 20px;
+}
+.period-dates {
+  display: flex; justify-content: space-between;
+  font-family: 'DM Mono', monospace; font-size: 11px; color: var(--sub);
+  margin-bottom: 8px;
+}
+.period-track {
+  height: 8px; background: #e5e5ea;
+  border-radius: 99px; overflow: hidden; margin-bottom: 8px;
+}
+.period-fill {
+  height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg, var(--blue), var(--teal));
+}
+.period-info {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12px;
+}
+.period-elapsed { color: var(--text); font-weight: 600; }
+.period-remain  { color: var(--sub); }
+.editable-date[contenteditable="true"] {
+  cursor: text;
+  border-bottom: 1px dashed var(--border2);
+  padding: 0 2px;
+  border-radius: 3px;
+}
+.editable-date[contenteditable="true"]:focus {
+  outline: none;
+  border-bottom-color: var(--blue);
+  background: rgba(0,113,227,0.06);
+  color: var(--text);
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:500px){
+  header h1 { font-size: 22px; }
+  .kpi-value { font-size: 20px; }
+}
+
+/* ── ANIMATE ON LOAD ── */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(16px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.wrap > * { animation: fadeUp .5s ease both; }
+.wrap > *:nth-child(2) { animation-delay: .08s; }
+.wrap > *:nth-child(3) { animation-delay: .14s; }
+.wrap > *:nth-child(4) { animation-delay: .18s; }
+.wrap > *:nth-child(5) { animation-delay: .22s; }
+.wrap > *:nth-child(6) { animation-delay: .26s; }
+
+/* inline edit hint */
+.edit-hint {
+  font-size: 10px; color: rgba(0,113,227,0.6);
+  font-family: 'DM Mono', monospace;
+  margin-left: 6px; opacity: 0; transition: .2s;
+}
+.kpi-card:hover .edit-hint { opacity: 1; }
+
+/* ── PHOTO COMPARE MODULE ── */
+.photo-compare-wrap {
+  background: #ffffff;
+  border: 1px solid #e5e5ea;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+/* Slot row */
+.photo-slots {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+.photo-slot {
+  position: relative;
+  border-right: 1px solid #e5e5ea;
+}
+.photo-slot:last-child { border-right: none; }
+
+.slot-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px 10px;
+  border-bottom: 1px solid #e5e5ea;
+}
+.slot-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  font-family: 'DM Mono', monospace;
+}
+.slot-before .slot-label { color: var(--orange); }
+.slot-after  .slot-label { color: var(--green); }
+.slot-date-tag {
+  font-size: 10px; color: var(--sub);
+  font-family: 'DM Mono', monospace;
+  background: rgba(255,255,255,.05);
+  padding: 2px 8px; border-radius: 6px;
+}
+
+.slot-img-area {
+  position: relative;
+  aspect-ratio: 4/3;
+  background: #f9f9fb;
+  overflow: hidden;
+  cursor: pointer;
+}
+.slot-img-area img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform .3s;
+}
+.slot-img-area:hover img { transform: scale(1.03); }
+
+.slot-empty {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 8px;
+  border: 2px dashed #d1d1d6;
+  transition: .2s;
+}
+.slot-empty:hover {
+  border-color: rgba(0,113,227,.5);
+  background: rgba(0,113,227,.04);
+}
+.slot-empty .empty-icon { font-size: 32px; opacity: .5; }
+.slot-empty .empty-text { font-size: 12px; color: var(--sub); }
+.slot-empty .empty-hint { font-size: 10px; color: rgba(107,107,128,.6); }
+
+.slot-overlay {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 8px 12px;
+  background: linear-gradient(transparent, rgba(0,0,0,.7));
+  display: flex; gap: 6px;
+  opacity: 0; transition: .2s;
+}
+.slot-img-area:hover .slot-overlay { opacity: 1; }
+.slot-overlay-btn {
+  font-size: 10px; padding: 3px 8px; border-radius: 6px;
+  border: none; cursor: pointer; font-weight: 600;
+  background: rgba(0,0,0,.55); color: #fff;
+  backdrop-filter: blur(4px); transition: .15s;
+}
+.slot-overlay-btn:hover { background: rgba(255,255,255,.25); }
+.slot-overlay-btn.del { background: rgba(255,69,58,.25); color: var(--red); }
+.slot-overlay-btn.del:hover { background: rgba(255,69,58,.4); }
+
+/* Diff slider overlay */
+.compare-slider-wrap {
+  position: relative;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  user-select: none;
+  cursor: col-resize;
+  display: none;
+}
+.compare-slider-wrap.active { display: block; }
+.cs-before, .cs-after {
+  position: absolute; inset: 0;
+  overflow: hidden;
+}
+.cs-before img, .cs-after img {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%; object-fit: cover;
+  pointer-events: none;
+}
+.cs-after { clip-path: inset(0 50% 0 0); }
+.cs-divider {
+  position: absolute; top: 0; bottom: 0;
+  width: 2px; background: #fff;
+  transform: translateX(-50%);
+  pointer-events: none; z-index: 3;
+}
+.cs-handle {
+  position: absolute; top: 50%; left: 0;
+  transform: translate(-50%, -50%);
+  width: 36px; height: 36px; border-radius: 50%;
+  background: #fff; box-shadow: 0 2px 12px rgba(0,0,0,.5);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; pointer-events: none; z-index: 4;
+}
+.cs-label {
+  position: absolute; top: 8px;
+  font-size: 10px; font-weight: 700; padding: 2px 8px;
+  border-radius: 4px; z-index: 4;
+  font-family: 'DM Mono', monospace;
+}
+.cs-label.before { left: 10px; background: rgba(255,159,10,.9); color: #000; }
+.cs-label.after  { right: 10px; background: rgba(48,209,88,.9); color: #000; }
+
+/* Compare toolbar */
+.compare-toolbar {
+  padding: 12px 16px;
+  border-top: 1px solid #e5e5ea;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.compare-mode-btns { display: flex; gap: 6px; }
+.mode-btn {
+  padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 700;
+  border: 1px solid #d1d1d6; background: #fff; color: #86868b;
+  cursor: pointer; transition: .15s; font-family: 'DM Mono', monospace;
+}
+.mode-btn.active {
+  background: #0071e3; border-color: #0071e3; color: #fff;
+}
+.compare-note-wrap { flex: 1; min-width: 180px; }
+.compare-note {
+  width: 100%; background: #f5f5f7;
+  border: 1px solid #e5e5ea; border-radius: 8px;
+  color: #1d1d1f; font-size: 12px; font-family: 'Noto Sans TC', sans-serif;
+  padding: 6px 10px; resize: none; outline: none;
+  transition: border-color .15s;
+}
+.compare-note:focus { border-color: rgba(0,113,227,.5); }
+
+/* History strip */
+.photo-history {
+  padding: 14px 16px 16px;
+  border-top: 1px solid #e5e5ea;
+}
+.history-title {
+  font-size: 11px; font-weight: 700; color: #86868b;
+  letter-spacing: 1px; font-family: 'DM Mono', monospace;
+  margin-bottom: 10px;
+}
+.history-strip {
+  display: flex; gap: 10px; overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.history-thumb {
+  flex-shrink: 0; position: relative;
+  width: 72px; cursor: pointer;
+}
+.history-thumb img {
+  width: 72px; height: 54px; object-fit: cover;
+  border-radius: 8px; border: 2px solid transparent;
+  transition: .15s; display: block;
+}
+.history-thumb.active img { border-color: var(--blue); }
+.history-thumb:hover img  { border-color: #86868b; }
+.history-thumb .thumb-date {
+  font-size: 9px; color: var(--sub);
+  font-family: 'DM Mono', monospace;
+  text-align: center; margin-top: 3px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.history-add-btn {
+  flex-shrink: 0; width: 72px; height: 54px;
+  border-radius: 8px; border: 1.5px dashed #c7c7cc;
+  background: transparent; cursor: pointer; color: var(--sub);
+  font-size: 18px; display: flex; align-items: center; justify-content: center;
+  transition: .15s;
+}
+.history-add-btn:hover {
+  border-color: rgba(0,113,227,.5); color: #0071e3;
+  background: rgba(0,113,227,.05);
+}
+
+/* Score diff chip */
+.diff-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 700; padding: 3px 10px;
+  border-radius: 20px; font-family: 'DM Mono', monospace;
+}
+.diff-chip.better { background: #edfaf3; color: #1a7a3e; border: 1px solid #b4e6cd; }
+.diff-chip.worse  { background: #ffeaea; color: #d70015; border: 1px solid #f5b8bb; }
+.diff-chip.same   { background: #f5f5f7; color: #86868b; border: 1px solid #d1d1d6; }
+
+.score-row {
+  display: flex; gap: 10px; padding: 10px 16px;
+  border-top: 1px solid #e5e5ea; flex-wrap: wrap; align-items: center;
+}
+.score-item { font-size: 12px; color: #86868b; }
+.score-item strong { color: #1d1d1f; }
+</style>
+</head>
+<body>
+
+<header>
+<div class="header-inner">
+  <div class="header-eyebrow">右昌 Apple Shop · 配件專區成效追蹤</div>
+  <h1>配件陳列專案<br>成效追蹤儀表板</h1>
+  <div class="header-meta">
+    <span class="meta-chip">專案啟動：<span id="headerStart">待設定</span></span>
+    <span class="meta-chip">目前階段：<span id="headerPhase" class="editable-date" contenteditable="true">待更新</span></span>
+    <span class="phase-badge" id="phaseBadge">📊 尚無資料</span>
+  </div>
+</div>
+</header>
+
+<div class="wrap">
+
+<!-- ── 整體進度計 ── -->
+<div class="score-section">
+  <div class="score-card">
+    <div class="score-ring-wrap">
+      <svg width="110" height="110" viewBox="0 0 110 110">
+        <circle class="score-ring-bg" cx="55" cy="55" r="46"/>
+        <circle class="score-ring-fill" id="scoreRing" cx="55" cy="55" r="46"
+          stroke="url(#scoreGrad)"
+          stroke-dasharray="289" stroke-dashoffset="289"/>
+        <defs>
+          <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"   stop-color="#30d158"/>
+            <stop offset="100%" stop-color="#32d2f3"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="score-center">
+        <div class="score-num" id="scoreNum">—</div>
+        <div class="score-max">/100</div>
+      </div>
+    </div>
+    <div class="score-right">
+      <h2>專案健康度評估</h2>
+      <div class="score-desc">
+        用來核對資料、陳列建議與執行情形。
+        前後對比和逐月紀錄還沒填時，健康度保持空白。
+      </div>
+      <div class="score-pills">
+        <span class="score-pill pill-orange">待填入數據</span>
+        <span class="score-pill pill-orange">待整理建議</span>
+        <span class="score-pill pill-orange">待追蹤執行</span>
+        <span class="score-pill pill-orange">待驗收對比</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 專案時程進度 ── -->
+<div class="section-head">專案時程</div>
+<div class="period-bar-wrap">
+  <div class="period-dates">
+    <span>啟動 <span class="editable-date" id="periodStart" contenteditable="true">YYYY/MM/DD</span></span>
+    <span id="todayMark">今天</span>
+    <span>目標 <span class="editable-date" id="periodEnd" contenteditable="true">YYYY/MM/DD</span></span>
+  </div>
+  <div class="period-track">
+    <div class="period-fill" id="periodFill" style="width:0%"></div>
+  </div>
+  <div class="period-info">
+    <span class="period-elapsed" id="periodElapsed">請填入起始與目標日期</span>
+    <span class="period-remain" id="periodRemain"></span>
+  </div>
+</div>
+
+<!-- ── 核心 KPI ── -->
+<div class="section-head">核心 KPI 指標</div>
+<div class="kpi-grid">
+
+  <div class="kpi-card kpi-green" onclick="editKpi(this)">
+    <div class="kpi-label">重點品項 銷售總量 <span class="edit-hint">點擊編輯</span></div>
+    <div class="kpi-value" id="kpi-qty" contenteditable="false">—</div>
+    <div class="kpi-sub">件（填入統計區間）</div>
+    <div class="kpi-delta delta-flat" id="kpi-qty-delta">— 待填入對照區間</div>
+  </div>
+
+  <div class="kpi-card kpi-blue" onclick="editKpi(this)">
+    <div class="kpi-label">重點品項 銷售總額 <span class="edit-hint">點擊編輯</span></div>
+    <div class="kpi-value" id="kpi-amt" contenteditable="false">—</div>
+    <div class="kpi-sub">元（填入統計區間）</div>
+    <div class="kpi-delta delta-flat" id="kpi-amt-delta">— 待填入月均基準</div>
+  </div>
+
+  <div class="kpi-card kpi-orange" onclick="editKpi(this)">
+    <div class="kpi-label">陳列到位率 <span class="edit-hint">點擊編輯</span></div>
+    <div class="kpi-value" id="kpi-display" contenteditable="false">—</div>
+    <div class="kpi-sub">已陳列品項 / 全部品項</div>
+    <div class="kpi-delta delta-flat">目標待設定</div>
+  </div>
+
+  <div class="kpi-card kpi-purple" onclick="editKpi(this)">
+    <div class="kpi-label">建議執行率 <span class="edit-hint">點擊編輯</span></div>
+    <div class="kpi-value" id="kpi-exec" contenteditable="false">—</div>
+    <div class="kpi-sub">已完成建議 / 建議總數</div>
+    <div class="kpi-delta delta-flat">目標待設定</div>
+  </div>
+
+  <div class="kpi-card kpi-teal" onclick="editKpi(this)">
+    <div class="kpi-label">主力品類佔比 <span class="edit-hint">點擊編輯</span></div>
+    <div class="kpi-value" id="kpi-charger" contenteditable="false">—</div>
+    <div class="kpi-sub">數量佔重點品項之比</div>
+    <div class="kpi-delta delta-flat">陳列調整後再追蹤</div>
+  </div>
+
+  <div class="kpi-card kpi-red" onclick="editKpi(this)">
+    <div class="kpi-label">缺貨/陳列遺漏品項 <span class="edit-hint">點擊編輯</span></div>
+    <div class="kpi-value" id="kpi-missing" contenteditable="false">—</div>
+    <div class="kpi-sub">待填入未陳列或需補貨的品項</div>
+    <div class="kpi-delta delta-flat">確認庫存後再補位</div>
+  </div>
+
+  <div class="kpi-card kpi-blue" onclick="editKpi(this)">
+    <div class="kpi-label">資料更新週期 <span class="edit-hint">點擊編輯</span></div>
+    <div class="kpi-value" id="kpi-update" contenteditable="false">—</div>
+    <div class="kpi-sub">目前的匯入頻率</div>
+    <div class="kpi-delta delta-flat">可依門市調整</div>
+  </div>
+
+  <div class="kpi-card kpi-green" onclick="editKpi(this)">
+    <div class="kpi-label">重點單品 銷售額 <span class="edit-hint">點擊編輯</span></div>
+    <div class="kpi-value" id="kpi-focus" contenteditable="false">—</div>
+    <div class="kpi-sub">元｜填入單品名稱</div>
+    <div class="kpi-delta delta-flat">— 陳列改善後追蹤此項</div>
+  </div>
+
+</div>
+
+<!-- ── 花車陳列對比 ── -->
+<div class="section-head">花車陳列對比</div>
+
+<div class="photo-compare-wrap">
+
+  <!-- 雙欄 Before / After -->
+  <div class="photo-slots" id="sideBySide">
+    <!-- BEFORE -->
+    <div class="photo-slot slot-before">
+      <div class="slot-header">
+        <span class="slot-label">BEFORE</span>
+        <span class="slot-date-tag" id="beforeDateTag">未設定日期</span>
+      </div>
+      <div class="slot-img-area" id="beforeArea" onclick="triggerUpload('before')">
+        <div class="slot-empty" id="beforeEmpty">
+          <div class="empty-icon">📷</div>
+          <div class="empty-text">點擊上傳改版前照片</div>
+          <div class="empty-hint">JPG / PNG / HEIC</div>
+        </div>
+        <img id="beforeImg" src="" style="display:none" alt="改版前">
+        <div class="slot-overlay" id="beforeOverlay">
+          <button class="slot-overlay-btn" onclick="event.stopPropagation();triggerUpload('before')">換圖</button>
+          <button class="slot-overlay-btn" onclick="event.stopPropagation();setDateNow('before')">📅 標記今日</button>
+          <button class="slot-overlay-btn del" onclick="event.stopPropagation();clearSlot('before')">✕</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- AFTER -->
+    <div class="photo-slot slot-after">
+      <div class="slot-header">
+        <span class="slot-label">AFTER</span>
+        <span class="slot-date-tag" id="afterDateTag">未設定日期</span>
+      </div>
+      <div class="slot-img-area" id="afterArea" onclick="triggerUpload('after')">
+        <div class="slot-empty" id="afterEmpty">
+          <div class="empty-icon">📷</div>
+          <div class="empty-text">點擊上傳改版後照片</div>
+          <div class="empty-hint">陳列調整完成後拍攝</div>
+        </div>
+        <img id="afterImg" src="" style="display:none" alt="改版後">
+        <div class="slot-overlay" id="afterOverlay">
+          <button class="slot-overlay-btn" onclick="event.stopPropagation();triggerUpload('after')">換圖</button>
+          <button class="slot-overlay-btn" onclick="event.stopPropagation();setDateNow('after')">📅 標記今日</button>
+          <button class="slot-overlay-btn del" onclick="event.stopPropagation();clearSlot('after')">✕</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 滑動對比模式 -->
+  <div class="compare-slider-wrap" id="sliderWrap">
+    <div class="cs-before"><img id="csBeforeImg" src="" alt="before"></div>
+    <div class="cs-after" id="csAfterDiv"><img id="csAfterImg" src="" alt="after"></div>
+    <div class="cs-divider" id="csDivider" style="left:50%"></div>
+    <div class="cs-handle" id="csHandle" style="left:50%">⇄</div>
+    <div class="cs-label before">BEFORE</div>
+    <div class="cs-label after">AFTER</div>
+  </div>
+
+  <!-- 評分 row -->
+  <div class="score-row" id="scoreRow" style="display:none">
+    <span class="score-item">改版前評分：<strong id="beforeScore">—</strong></span>
+    <span class="score-item">改版後評分：<strong id="afterScore">—</strong></span>
+    <span id="diffChipWrap"></span>
+    <div style="flex:1"></div>
+    <button class="slot-overlay-btn" style="font-size:11px;padding:4px 10px;border-radius:7px;background:rgba(191,90,242,.15);color:var(--purple);border:1px solid rgba(191,90,242,.3)" onclick="scoreSlots()">重新評分</button>
+  </div>
+
+  <!-- 工具列 -->
+  <div class="compare-toolbar">
+    <div class="compare-mode-btns">
+      <button class="mode-btn active" id="modeSide" onclick="setMode('side')">並排</button>
+      <button class="mode-btn" id="modeSlider" onclick="setMode('slider')">滑動比較</button>
+    </div>
+    <div class="compare-note-wrap">
+      <textarea class="compare-note" id="compareNote" rows="1"
+        placeholder="輸入本次陳列調整備註（例：重點單品移至正前方，同類配件集中第一排）…"></textarea>
+    </div>
+    <button class="btn btn-primary" style="padding:6px 14px;font-size:12px;flex-shrink:0" onclick="saveCompare()">💾 儲存對比</button>
+  </div>
+
+  <!-- 歷史紀錄條 -->
+  <div class="photo-history">
+    <div class="history-title">歷史陳列紀錄</div>
+    <div class="history-strip" id="historyStrip">
+      <button class="history-add-btn" onclick="triggerUpload('history')" title="新增歷史照片">＋</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- 隱藏 file inputs -->
+<input type="file" id="uploadBefore"  accept="image/*" style="display:none" onchange="handleUpload(event,'before')">
+<input type="file" id="uploadAfter"   accept="image/*" style="display:none" onchange="handleUpload(event,'after')">
+<input type="file" id="uploadHistory" accept="image/*" style="display:none" onchange="handleUpload(event,'history')">
+
+<!-- ── 分項模組 ── -->
+<div class="section-head">分項進度</div>
+<div class="module-grid">
+
+  <div class="module-card">
+    <div class="module-title">
+      <div class="module-icon icon-blue">📊</div>
+      資料庫建置
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span class="progress-name">銷售數據匯入</span>
+        <span class="progress-val">待填</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--green)"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span class="progress-name">品項分類標籤</span>
+        <span class="progress-val">待填</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--green)"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span class="progress-name">陳列狀態記錄</span>
+        <span class="progress-val">待填</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--blue)"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span class="progress-name">花車照片存檔</span>
+        <span class="progress-val">待填</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--orange)"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span class="progress-name">月份環比追蹤</span>
+        <span class="progress-val">待填</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--red)"></div></div>
+    </div>
+  </div>
+
+  <div class="module-card">
+    <div class="module-title">
+      <div class="module-icon icon-orange">🛒</div>
+      陳列執行落地
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span class="progress-name">主力品類正面中央位</span>
+        <span class="progress-val">待填</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--orange)"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span class="progress-name">高單價配件 最顯眼位</span>
+        <span class="progress-val">待填</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--red)"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span class="progress-name">配件分區標示</span>
+        <span class="progress-val">待填</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--red)"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span class="progress-name">主力品牌專區</span>
+        <span class="progress-val">待填</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--red)"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span class="progress-name">缺貨品項補位</span>
+        <span class="progress-val">待填</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--red)"></div></div>
+    </div>
+  </div>
+
+  <div class="module-card">
+    <div class="module-title">
+      <div class="module-icon icon-green">📈</div>
+      成效驗收指標
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span class="progress-name">月份銷售量環比達標</span>
+        <span class="progress-val">待填門檻</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--sub)"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span class="progress-name">重點單品月銷達標</span>
+        <span class="progress-val">待填門檻</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--sub)"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span class="progress-name">主力品類月銷達標</span>
+        <span class="progress-val">待填門檻</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--sub)"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span class="progress-name">高單價配件金額達標</span>
+        <span class="progress-val">待填門檻</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--sub)"></div></div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span class="progress-name">保護類月銷達標</span>
+        <span class="progress-val">待填門檻</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--red)"></div></div>
+    </div>
+  </div>
+
+  <div class="module-card">
+    <div class="module-title">
+      <div class="module-icon icon-purple">🗓</div>
+      里程碑時間軸
+    </div>
+    <div class="timeline">
+
+      <div class="milestone">
+        <div class="milestone-dot dot-pending"></div>
+        <div class="milestone-date editable-date" contenteditable="true">YYYY/MM/DD</div>
+        <div class="milestone-title">啟動與數據基準建立</div>
+        <div class="milestone-desc">匯入一段銷售資料，完成品項分類</div>
+        <span class="milestone-tag tag-pending">⏳ 待開始</span>
+      </div>
+
+      <div class="milestone">
+        <div class="milestone-dot dot-pending"></div>
+        <div class="milestone-date editable-date" contenteditable="true">YYYY/MM/DD</div>
+        <div class="milestone-title">陳列建議上線</div>
+        <div class="milestone-desc">整理陳列建議，確認資料可以匯入</div>
+        <span class="milestone-tag tag-pending">⏳ 待開始</span>
+      </div>
+
+      <div class="milestone">
+        <div class="milestone-dot dot-pending"></div>
+        <div class="milestone-date editable-date" contenteditable="true">YYYY/MM/DD</div>
+        <div class="milestone-title">陳列執行與首次對比</div>
+        <div class="milestone-desc">調整佈局、上傳新照片、補齊缺項</div>
+        <span class="milestone-tag tag-pending">⏳ 待開始</span>
+      </div>
+
+      <div class="milestone">
+        <div class="milestone-dot dot-pending"></div>
+        <div class="milestone-date editable-date" contenteditable="true">YYYY/MM/DD</div>
+        <div class="milestone-title">第一次成效驗收</div>
+        <div class="milestone-desc">匯入新區間數據，與基準期比較後調整陳列</div>
+        <span class="milestone-tag tag-pending">⏳ 待開始</span>
+      </div>
+
+      <div class="milestone">
+        <div class="milestone-dot dot-pending"></div>
+        <div class="milestone-date editable-date" contenteditable="true">YYYY/MM/DD</div>
+        <div class="milestone-title">階段總檢討與下季規劃</div>
+        <div class="milestone-desc">整理成效，擴充配件資料，規劃下一批品項</div>
+        <span class="milestone-tag tag-pending">⏳ 待開始</span>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ── 現況問題 ── -->
+<div class="section-head">現況問題 & 觀察</div>
+<div class="insight-list">
+
+  <div class="insight insight-crit">
+    <div class="insight-tag">🚨 關鍵缺口</div>
+    <div class="insight-body">
+      <b>先留下「執行前後」對比</b>：陳列改動若沒有記錄時間點，之後無法判斷建議有沒有帶動銷售。
+      → 先拍下目前花車全景作為 Before，下次調整後再拍 After。
+    </div>
+  </div>
+
+  <div class="insight insight-warn">
+    <div class="insight-tag">⚡ 風險</div>
+    <div class="insight-body">
+      <b>更新間隔不要拉太長</b>：隔太久才看一次，中間的變化會被延遲。
+      → 固定一個門市做得到的週期匯入銷售表，才能看到變化。
+    </div>
+  </div>
+
+  <div class="insight insight-warn">
+    <div class="insight-tag">⚡ 需補齊</div>
+    <div class="insight-body">
+      <b>有銷售但未陳列的品項先補位</b>：賣得出去、架子上看不到，等於把需求留在倉庫。
+      → 確認庫存後補上，再把陳列狀態改成已上架。
+    </div>
+  </div>
+
+  <div class="insight insight-good">
+    <div class="insight-tag">✅ 優勢</div>
+    <div class="insight-body">
+      <b>同一品牌若有多款同時突出</b>，適合集中成品牌專區。
+      旁邊留一個對照品牌並排，可以縮短顧客比較的時間。
+    </div>
+  </div>
+
+  <div class="insight insight-info">
+    <div class="insight-tag">📌 建議</div>
+    <div class="insight-body">
+      <b>建立月份追蹤表</b>。每期紀錄：重點品項的銷售量、金額、陳列狀態。
+      累積數期之後，才能看出哪些品項是因為陳列調整而變化。
+    </div>
+  </div>
+
+</div>
+
+<!-- ── 本週待辦 ── -->
+<div class="section-head">本週行動清單</div>
+<div class="action-list">
+
+  <div class="action-item">
+    <div class="action-num high">H</div>
+    <div class="action-content">
+      <div class="action-title">拍花車「改版前」全景照，上傳進 Dashboard</div>
+      <div class="action-desc">作為 Before 基準照片，讓未來 After 有比較依據</div>
+    </div>
+    <div class="action-due">本週內</div>
+  </div>
+
+  <div class="action-item">
+    <div class="action-num high">H</div>
+    <div class="action-content">
+      <div class="action-title">高單價配件移到花車最顯眼的位置</div>
+      <div class="action-desc">貢獻高卻不在黃金區時，優先調整陳列</div>
+    </div>
+    <div class="action-due">本週內</div>
+  </div>
+
+  <div class="action-item">
+    <div class="action-num high">H</div>
+    <div class="action-content">
+      <div class="action-title">確認缺貨或未陳列品項，安排補位上架</div>
+      <div class="action-desc">有銷量但架子上看不到時，先核對庫存再上架</div>
+    </div>
+    <div class="action-due">今天</div>
+  </div>
+
+  <div class="action-item">
+    <div class="action-num mid">M</div>
+    <div class="action-content">
+      <div class="action-title">依配件類型製作分區標牌</div>
+      <div class="action-desc">讓顧客比較快找到對的類型，減少詢問</div>
+    </div>
+    <div class="action-due">本週</div>
+  </div>
+
+  <div class="action-item">
+    <div class="action-num mid">M</div>
+    <div class="action-content">
+      <div class="action-title">建立月份追蹤表，記錄下一期銷售</div>
+      <div class="action-desc">欄位：日期、品名、當期銷售量、當期金額、陳列狀態</div>
+    </div>
+    <div class="action-due">月底前</div>
+  </div>
+
+  <div class="action-item">
+    <div class="action-num low">L</div>
+    <div class="action-content">
+      <div class="action-title">規劃主力品牌專區的位置</div>
+      <div class="action-desc">同品牌集中，旁邊留對照品牌，方便比較</div>
+    </div>
+    <div class="action-due">下週</div>
+  </div>
+
+</div>
+
+<!-- ── 核對清單 ── -->
+<div class="section-head">執行核對清單</div>
+<div class="checklist" id="checklist">
+
+  <div class="check-item todo" onclick="toggleCheck(this)">
+    <div class="check-dot"></div>
+    <div class="check-text">
+      <div class="check-title">匯入本期銷售資料</div>
+      <div class="check-sub">區間內的重點品項匯入後再核對</div>
+    </div>
+  </div>
+
+  <div class="check-item todo" onclick="toggleCheck(this)">
+    <div class="check-dot"></div>
+    <div class="check-text">
+      <div class="check-title">整理陳列建議並可查閱</div>
+      <div class="check-sub">建議事項放在頁面上追蹤</div>
+    </div>
+  </div>
+
+  <div class="check-item todo" onclick="toggleCheck(this)">
+    <div class="check-dot"></div>
+    <div class="check-text">
+      <div class="check-title">確認本頁可以編輯並儲存</div>
+      <div class="check-sub">KPI、里程碑、待辦可依門市更新</div>
+    </div>
+  </div>
+
+  <div class="check-item todo" onclick="toggleCheck(this)">
+    <div class="check-dot"></div>
+    <div class="check-text">
+      <div class="check-title">拍攝並上傳改版前照片</div>
+      <div class="check-sub">作為之後對照的基準</div>
+    </div>
+  </div>
+
+  <div class="check-item todo" onclick="toggleCheck(this)">
+    <div class="check-dot"></div>
+    <div class="check-text">
+      <div class="check-title">高單價配件移至黃金陳列位</div>
+      <div class="check-sub">放在最顯眼處，必要時附簡短說明</div>
+    </div>
+  </div>
+
+  <div class="check-item todo" onclick="toggleCheck(this)">
+    <div class="check-dot"></div>
+    <div class="check-text">
+      <div class="check-title">主力品類調至正面中央</div>
+      <div class="check-sub">同系列並排，標示清楚類別</div>
+    </div>
+  </div>
+
+  <div class="check-item todo" onclick="toggleCheck(this)">
+    <div class="check-dot"></div>
+    <div class="check-text">
+      <div class="check-title">缺貨或未陳列品項補位上架</div>
+      <div class="check-sub">確認庫存後，更新陳列狀態</div>
+    </div>
+  </div>
+
+  <div class="check-item todo" onclick="toggleCheck(this)">
+    <div class="check-dot"></div>
+    <div class="check-text">
+      <div class="check-title">匯入下一期銷售並做環比</div>
+      <div class="check-sub">與基準期比較，觀察變化</div>
+    </div>
+  </div>
+
+  <div class="check-item todo" onclick="toggleCheck(this)">
+    <div class="check-dot"></div>
+    <div class="check-text">
+      <div class="check-title">建立月份追蹤表</div>
+      <div class="check-sub">逐期記錄銷售量與陳列狀態</div>
+    </div>
+  </div>
+
+  <div class="check-item todo" onclick="toggleCheck(this)">
+    <div class="check-dot"></div>
+    <div class="check-text">
+      <div class="check-title">完成第一次成效驗收</div>
+      <div class="check-sub">對比基準期與新區間，整理說明</div>
+    </div>
+  </div>
+
+</div>
+
+</div><!-- /wrap -->
+
+<!-- ── Bottom Bar ── -->
+<div class="bottom-bar">
+  <span class="label" id="savedLabel">尚未儲存本頁進度</span>
+  <button class="btn btn-ghost" onclick="exportNote()">📋 複製摘要</button>
+  <button class="btn btn-primary" onclick="saveProgress()">💾 儲存進度</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+//  花車陳列對比模組
+// ══════════════════════════════════════════
+
+// ── state ──
+let compareState = {
+  before: { b64: null, date: null },
+  after:  { b64: null, date: null },
+  mode: 'side',
+  note: '',
+  history: []   // [{b64, date, note}]
+};
+
+// ── load from localStorage ──
+(function loadCompare() {
+  try {
+    const raw = localStorage.getItem('compare_v1');
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    compareState = { ...compareState, ...s };
+
+    if (s.before?.b64) applySlot('before', s.before.b64, s.before.date);
+    if (s.after?.b64)  applySlot('after',  s.after.b64,  s.after.date);
+    if (s.note) document.getElementById('compareNote').value = s.note;
+    if (s.mode) setMode(s.mode, false);
+    if (s.history?.length) renderHistory();
+    if (s.before?.b64 && s.after?.b64) updateScoreRow();
+  } catch(e) {}
+})();
+
+// ── file upload triggers ──
+function triggerUpload(slot) {
+  document.getElementById('upload' + slot.charAt(0).toUpperCase() + slot.slice(1)).click();
+}
+
+function handleUpload(evt, slot) {
+  const file = evt.target.files[0];
+  if (!file) return;
+  evt.target.value = '';
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      // Compress to max 1200px
+      const MAX = 1200;
+      let w = img.width, h = img.height;
+      if (w > MAX || h > MAX) {
+        if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+        else { w = Math.round(w * MAX / h); h = MAX; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      const b64 = canvas.toDataURL('image/jpeg', 0.75);
+
+      if (slot === 'history') {
+        addHistory(b64);
+      } else {
+        const today = new Date().toLocaleDateString('zh-TW', {month:'2-digit', day:'2-digit'});
+        applySlot(slot, b64, today);
+        compareState[slot] = { b64, date: today };
+        if (compareState.before.b64 && compareState.after.b64) {
+          updateSliderImages();
+          updateScoreRow();
+        }
+      }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function applySlot(slot, b64, date) {
+  const img   = document.getElementById(slot + 'Img');
+  const empty = document.getElementById(slot + 'Empty');
+  const tag   = document.getElementById(slot + 'DateTag');
+
+  img.src = b64;
+  img.style.display = 'block';
+  empty.style.display = 'none';
+  tag.textContent = date || '未標記日期';
+  compareState[slot] = { ...compareState[slot], b64, date };
+
+  // Keep area not triggering upload when image exists
+  const area = document.getElementById(slot + 'Area');
+  area.onclick = null;
+}
+
+function clearSlot(slot) {
+  const img   = document.getElementById(slot + 'Img');
+  const empty = document.getElementById(slot + 'Empty');
+  const tag   = document.getElementById(slot + 'DateTag');
+  const area  = document.getElementById(slot + 'Area');
+
+  img.src = ''; img.style.display = 'none';
+  empty.style.display = 'flex';
+  tag.textContent = '未設定日期';
+  compareState[slot] = { b64: null, date: null };
+  area.onclick = () => triggerUpload(slot);
+
+  document.getElementById('scoreRow').style.display = 'none';
+  if (compareState.mode === 'slider') setMode('side', false);
+}
+
+function setDateNow(slot) {
+  const today = new Date().toLocaleDateString('zh-TW', { year:'numeric', month:'2-digit', day:'2-digit' });
+  document.getElementById(slot + 'DateTag').textContent = today;
+  if (compareState[slot]) compareState[slot].date = today;
+}
+
+// ── mode switch ──
+function setMode(mode, save = true) {
+  compareState.mode = mode;
+
+  const side   = document.getElementById('sideBySide');
+  const slider = document.getElementById('sliderWrap');
+  const btnS   = document.getElementById('modeSide');
+  const btnSl  = document.getElementById('modeSlider');
+
+  if (mode === 'side') {
+    side.style.display = 'grid';
+    slider.classList.remove('active');
+    btnS.classList.add('active'); btnSl.classList.remove('active');
+  } else {
+    if (!compareState.before.b64 || !compareState.after.b64) {
+      showToast('⚠️ 請先上傳 Before 和 After 兩張照片');
+      return;
+    }
+    side.style.display = 'none';
+    slider.classList.add('active');
+    btnSl.classList.add('active'); btnS.classList.remove('active');
+    updateSliderImages();
+    initSliderDrag();
+  }
+}
+
+function updateSliderImages() {
+  if (compareState.before.b64) document.getElementById('csBeforeImg').src = compareState.before.b64;
+  if (compareState.after.b64)  document.getElementById('csAfterImg').src  = compareState.after.b64;
+}
+
+// ── drag slider ──
+let sliderDragging = false;
+function initSliderDrag() {
+  const wrap   = document.getElementById('sliderWrap');
+  const after  = document.getElementById('csAfterDiv');
+  const div    = document.getElementById('csDivider');
+  const handle = document.getElementById('csHandle');
+
+  function move(x) {
+    const rect = wrap.getBoundingClientRect();
+    const pct  = Math.min(100, Math.max(0, (x - rect.left) / rect.width * 100));
+    after.style.clipPath  = `inset(0 ${100-pct}% 0 0)`;
+    div.style.left   = pct + '%';
+    handle.style.left = pct + '%';
+  }
+
+  wrap.onmousedown  = e => { sliderDragging = true; move(e.clientX); };
+  wrap.ontouchstart = e => { sliderDragging = true; move(e.touches[0].clientX); e.preventDefault(); };
+  document.onmousemove = e => { if (sliderDragging) move(e.clientX); };
+  document.ontouchmove = e => { if (sliderDragging) move(e.touches[0].clientX); };
+  document.onmouseup = document.ontouchend = () => { sliderDragging = false; };
+}
+
+// ── scoring (based on checklist) ──
+function scoreSlots() {
+  // Simple heuristic: before = always base, after = current checklist
+  const beforeScore = 45;  // base before changes
+  const items = document.querySelectorAll('.check-item');
+  let done = 0;
+  items.forEach(el => { if (el.classList.contains('done')) done++; });
+  const afterScore = Math.round(45 + (done / items.length) * 55);
+
+  document.getElementById('beforeScore').textContent = beforeScore + ' / 100';
+  document.getElementById('afterScore').textContent  = afterScore + ' / 100';
+
+  const diff = afterScore - beforeScore;
+  const chip = document.getElementById('diffChipWrap');
+  if (diff > 0) {
+    chip.innerHTML = `<span class="diff-chip better">▲ +${diff} 改善</span>`;
+  } else if (diff < 0) {
+    chip.innerHTML = `<span class="diff-chip worse">▼ ${diff} 下降</span>`;
+  } else {
+    chip.innerHTML = `<span class="diff-chip same">— 持平</span>`;
+  }
+}
+
+function updateScoreRow() {
+  document.getElementById('scoreRow').style.display = 'flex';
+  scoreSlots();
+}
+
+// ── history ──
+function addHistory(b64) {
+  const date = new Date().toLocaleDateString('zh-TW', { month:'2-digit', day:'2-digit' });
+  const note = document.getElementById('compareNote').value.trim().slice(0,40);
+  compareState.history.push({ b64, date, note });
+  renderHistory();
+  showToast('📷 已加入歷史紀錄');
+}
+
+function renderHistory() {
+  const strip = document.getElementById('historyStrip');
+  // Clear existing thumbs (keep add button)
+  strip.innerHTML = '<button class="history-add-btn" onclick="triggerUpload(\'history\')" title="新增歷史照片">＋</button>';
+
+  compareState.history.forEach((item, i) => {
+    const thumb = document.createElement('div');
+    thumb.className = 'history-thumb';
+    thumb.title = item.note || item.date;
+    thumb.innerHTML = `
+      <img src="${item.b64}" alt="紀錄 ${i+1}">
+      <div class="thumb-date">${item.date}</div>
+    `;
+    thumb.addEventListener('click', () => {
+      // Load into before slot if empty, else after, else ask
+      if (!compareState.before.b64) {
+        applySlot('before', item.b64, item.date);
+      } else if (!compareState.after.b64) {
+        applySlot('after', item.b64, item.date);
+        updateSliderImages();
+        updateScoreRow();
+      } else {
+        applySlot('before', item.b64, item.date);
+      }
+      document.querySelectorAll('.history-thumb').forEach(t => t.classList.remove('active'));
+      thumb.classList.add('active');
+      showToast('照片已載入至空位');
+    });
+    strip.insertBefore(thumb, strip.firstChild);
+  });
+}
+
+// ── save compare ──
+function saveCompare() {
+  compareState.note = document.getElementById('compareNote').value;
+  try {
+    // Limit history to last 8 to avoid storage overflow
+    const toSave = { ...compareState, history: compareState.history.slice(-8) };
+    localStorage.setItem('compare_v1', JSON.stringify(toSave));
+    showToast('✅ 對比資料已儲存');
+  } catch(e) {
+    showToast('❌ 儲存失敗（照片過大，請清減歷史紀錄）');
+  }
+}
+
+// ══════════════════════════════════════════
+//  時程計算
+// ══════════════════════════════════════════
+function parseProjectDate(text) {
+  const m = String(text || '').trim().match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})$/);
+  if (!m) return null;
+  const y = Number(m[1]), mo = Number(m[2]), d = Number(m[3]);
+  const date = new Date(y, mo - 1, d);
+  if (Number.isNaN(date.getTime())) return null;
+  if (date.getFullYear() !== y || date.getMonth() !== mo - 1 || date.getDate() !== d) return null;
+  return date;
+}
+
+function renderTimeline() {
+  const startEl = document.getElementById('periodStart');
+  const endEl = document.getElementById('periodEnd');
+  const fill = document.getElementById('periodFill');
+  const elapsedEl = document.getElementById('periodElapsed');
+  const remainEl = document.getElementById('periodRemain');
+  const headerStart = document.getElementById('headerStart');
+  if (!startEl || !endEl || !fill || !elapsedEl || !remainEl) return;
+
+  const startText = startEl.textContent.trim();
+  const endText = endEl.textContent.trim();
+  const start = parseProjectDate(startText);
+  const end = parseProjectDate(endText);
+  if (headerStart) headerStart.textContent = start ? startText : '待設定';
+
+  if (!start || !end || end.getTime() <= start.getTime()) {
+    fill.style.width = '0%';
+    elapsedEl.textContent = '請填入起始與目標日期（YYYY/MM/DD）';
+    remainEl.textContent = '';
+    return;
+  }
+
+  const today = new Date();
+  const total = end.getTime() - start.getTime();
+  const elapsed = Math.max(0, Math.min(today.getTime() - start.getTime(), total));
+  const pct = (elapsed / total * 100).toFixed(1);
+  fill.style.width = pct + '%';
+  const daysElapsed = Math.floor(elapsed / 86400000);
+  const daysRemain = Math.ceil((end.getTime() - today.getTime()) / 86400000);
+  elapsedEl.textContent = `已進行 ${daysElapsed} 天（${pct}%）`;
+  remainEl.textContent = daysRemain > 0 ? `距目標還有 ${daysRemain} 天` : '已超過目標日期';
+}
+
+document.querySelectorAll('.editable-date').forEach(el => {
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); el.blur(); }
+  });
+});
+document.getElementById('periodStart').addEventListener('blur', renderTimeline);
+document.getElementById('periodEnd').addEventListener('blur', renderTimeline);
+renderTimeline();
+
+// ══════════════════════════════════════════
+//  Score ring animation
+// ══════════════════════════════════════════
+function applyScoreDisplay(score, animate) {
+  const el = document.getElementById('scoreNum');
+  const ring = document.getElementById('scoreRing');
+  const circ = 2 * Math.PI * 46;
+  ring.style.strokeDasharray = circ;
+  if (!Number.isFinite(score)) {
+    el.textContent = '—';
+    ring.style.strokeDashoffset = circ;
+    return;
+  }
+  el.textContent = String(score);
+  const target = circ * (1 - score / 100);
+  if (animate) {
+    ring.style.strokeDashoffset = circ;
+    setTimeout(() => { ring.style.strokeDashoffset = target; }, 200);
+  } else {
+    ring.style.strokeDashoffset = target;
+  }
+}
+
+(function animateScore() {
+  const raw = localStorage.getItem('tracker_score');
+  const score = raw === null || String(raw).trim() === '' ? NaN : parseInt(raw, 10);
+  applyScoreDisplay(score, Number.isFinite(score));
+})();
+
+// ══════════════════════════════════════════
+//  localStorage 載入
+// ══════════════════════════════════════════
+function loadState() {
+  try {
+    const saved = localStorage.getItem('tracker_v2');
+    if (!saved) return;
+    const state = JSON.parse(saved);
+
+    // KPIs
+    if (state.kpis) {
+      Object.entries(state.kpis).forEach(([id, val]) => {
+        const el = document.getElementById('kpi-' + id);
+        if (el) el.textContent = val;
+      });
+    }
+
+    // Checklist
+    if (state.checks) {
+      const items = document.querySelectorAll('.check-item');
+      items.forEach((el, i) => {
+        if (state.checks[i] !== undefined) applyCheckState(el, state.checks[i]);
+      });
+    }
+
+    if (state.timeline) {
+      if (state.timeline.start) document.getElementById('periodStart').textContent = state.timeline.start;
+      if (state.timeline.end) document.getElementById('periodEnd').textContent = state.timeline.end;
+      if (state.timeline.phase) document.getElementById('headerPhase').textContent = state.timeline.phase;
+      renderTimeline();
+    }
+
+    if (Array.isArray(state.milestones)) {
+      document.querySelectorAll('.milestone-date').forEach((el, i) => {
+        if (state.milestones[i]) el.textContent = state.milestones[i];
+      });
+    }
+
+    const ts = localStorage.getItem('tracker_saved');
+    if (ts) document.getElementById('savedLabel').textContent = '上次儲存：' + ts;
+  } catch(e) {}
+}
+loadState();
+
+// ══════════════════════════════════════════
+//  KPI inline edit
+// ══════════════════════════════════════════
+function editKpi(card) {
+  const val = card.querySelector('[id^="kpi-"]');
+  if (!val) return;
+  const ce = val.contentEditable === 'true';
+  if (!ce) {
+    val.contentEditable = 'true';
+    val.focus();
+    const range = document.createRange();
+    range.selectNodeContents(val);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+  }
+}
+
+document.querySelectorAll('[id^="kpi-"]').forEach(el => {
+  el.addEventListener('blur', () => { el.contentEditable = 'false'; });
+  el.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } });
+});
+
+// ══════════════════════════════════════════
+//  Checklist toggle
+// ══════════════════════════════════════════
+function applyCheckState(el, state) {
+  el.classList.remove('done', 'todo', 'warn');
+  el.classList.add(state);
+  const dot = el.querySelector('.check-dot');
+  if (state === 'done') dot.textContent = '✓';
+  else if (state === 'warn') dot.textContent = '!';
+  else dot.textContent = '';
+}
+
+function toggleCheck(el) {
+  const cur = el.classList.contains('done') ? 'done' : el.classList.contains('warn') ? 'warn' : 'todo';
+  const next = cur === 'todo' ? 'done' : cur === 'done' ? 'warn' : 'todo';
+  applyCheckState(el, next);
+  updateScore();
+}
+
+function updateScore() {
+  const items = document.querySelectorAll('.check-item');
+  let done = 0;
+  items.forEach(el => { if (el.classList.contains('done')) done++; });
+  const pct = Math.round(done / items.length * 100);
+  // Map checklist progress to 0-100 score range
+  const score = Math.min(100, Math.round(40 + pct * 0.6));
+  applyScoreDisplay(score, false);
+  localStorage.setItem('tracker_score', String(score));
+}
+
+// ══════════════════════════════════════════
+//  Save
+// ══════════════════════════════════════════
+function saveProgress() {
+  try {
+    const kpis = {};
+    document.querySelectorAll('[id^="kpi-"]').forEach(el => {
+      kpis[el.id.replace('kpi-','')] = el.textContent.trim();
+    });
+
+    const checks = [];
+    document.querySelectorAll('.check-item').forEach(el => {
+      checks.push(el.classList.contains('done') ? 'done' : el.classList.contains('warn') ? 'warn' : 'todo');
+    });
+
+    const timeline = {
+      start: document.getElementById('periodStart').textContent.trim(),
+      end: document.getElementById('periodEnd').textContent.trim(),
+      phase: document.getElementById('headerPhase').textContent.trim()
+    };
+    const milestones = [...document.querySelectorAll('.milestone-date')].map(el => el.textContent.trim());
+
+    localStorage.setItem('tracker_v2', JSON.stringify({ kpis, checks, timeline, milestones }));
+    const ts = new Date().toLocaleString('zh-TW', { hour12: false });
+    localStorage.setItem('tracker_saved', ts);
+    document.getElementById('savedLabel').textContent = '上次儲存：' + ts;
+    showToast('✅ 進度已儲存');
+  } catch(e) {
+    showToast('❌ 儲存失敗（localStorage 已滿）');
+  }
+}
+
+// ══════════════════════════════════════════
+//  Export summary
+// ══════════════════════════════════════════
+function exportNote() {
+  const score = document.getElementById('scoreNum').textContent;
+  const qty   = document.getElementById('kpi-qty').textContent;
+  const amt   = document.getElementById('kpi-amt').textContent;
+  const disp  = document.getElementById('kpi-display').textContent;
+  const exec  = document.getElementById('kpi-exec').textContent;
+
+  const done = [...document.querySelectorAll('.check-item.done')].map(el => '✅ ' + el.querySelector('.check-title').textContent);
+  const todo = [...document.querySelectorAll('.check-item.todo')].map(el => '⬜ ' + el.querySelector('.check-title').textContent);
+  const warn = [...document.querySelectorAll('.check-item.warn')].map(el => '⚠️ ' + el.querySelector('.check-title').textContent);
+
+  const text = [
+    `【配件專案成效追蹤摘要】${new Date().toLocaleDateString('zh-TW')}`,
+    `專案健康度：${score}/100`,
+    ``,
+    `📊 核心數字`,
+    `• 重點品項銷售量：${qty}`,
+    `• 銷售總額：${amt}`,
+    `• 陳列到位率：${disp}`,
+    `• 建議執行率：${exec}`,
+    ``,
+    `📋 核對清單`,
+    ...done, ...warn, ...todo
+  ].join('\n');
+
+  navigator.clipboard.writeText(text).then(() => showToast('📋 摘要已複製到剪貼簿'));
+}
+
+// ══════════════════════════════════════════
+//  Toast
+// ══════════════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ══════════════════════════════════════════
+//  Action item click toggle
+// ══════════════════════════════════════════
+document.querySelectorAll('.action-item').forEach(el => {
+  el.addEventListener('click', () => {
+    el.style.opacity = el.style.opacity === '0.4' ? '1' : '0.4';
+  });
+});
+</script>
+</body>
+</html>
