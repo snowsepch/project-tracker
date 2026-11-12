@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%231A1A1A'/%3E%3C/svg%3E">
 <title>配件專案成效追蹤</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap');
@@ -377,6 +378,18 @@ header h1 {
 }
 .period-elapsed { color: var(--text); font-weight: 600; }
 .period-remain  { color: var(--sub); }
+.editable-date[contenteditable="true"] {
+  cursor: text;
+  border-bottom: 1px dashed var(--border2);
+  padding: 0 2px;
+  border-radius: 3px;
+}
+.editable-date[contenteditable="true"]:focus {
+  outline: none;
+  border-bottom-color: var(--blue);
+  background: rgba(0,113,227,0.06);
+  color: var(--text);
+}
 
 /* ── RESPONSIVE ── */
 @media(max-width:500px){
@@ -628,9 +641,9 @@ header h1 {
   <div class="header-eyebrow">右昌 Apple Shop · 配件專區成效追蹤</div>
   <h1>配件陳列專案<br>成效追蹤儀表板</h1>
   <div class="header-meta">
-    <span class="meta-chip">專案啟動：2026/01/24</span>
-    <span class="meta-chip">目前階段：Phase 2 執行中</span>
-    <span class="phase-badge" id="phaseBadge">📊 3個月資料已建立</span>
+    <span class="meta-chip">專案啟動：<span id="headerStart">待設定</span></span>
+    <span class="meta-chip">目前階段：<span id="headerPhase" class="editable-date" contenteditable="true">待更新</span></span>
+    <span class="phase-badge" id="phaseBadge">📊 尚無資料</span>
   </div>
 </div>
 </header>
@@ -654,21 +667,21 @@ header h1 {
         </defs>
       </svg>
       <div class="score-center">
-        <div class="score-num" id="scoreNum">72</div>
+        <div class="score-num" id="scoreNum">—</div>
         <div class="score-max">/100</div>
       </div>
     </div>
     <div class="score-right">
       <h2>專案健康度評估</h2>
       <div class="score-desc">
-        資料庫建立完成、陳列建議已輸出，目前進入<strong>執行驗證期</strong>。
-        缺少陳列前後對比數據及月份環比追蹤，是當前核心缺口。
+        用來核對資料、陳列建議與執行情形。
+        前後對比和逐月紀錄還沒填時，健康度保持空白。
       </div>
       <div class="score-pills">
-        <span class="score-pill pill-green">✅ 數據基礎建立</span>
-        <span class="score-pill pill-green">✅ 陳列建議產出</span>
-        <span class="score-pill pill-orange">⚡ 執行落地追蹤中</span>
-        <span class="score-pill pill-red">❌ 對比成效待驗收</span>
+        <span class="score-pill pill-orange">待填入數據</span>
+        <span class="score-pill pill-orange">待整理建議</span>
+        <span class="score-pill pill-orange">待追蹤執行</span>
+        <span class="score-pill pill-orange">待驗收對比</span>
       </div>
     </div>
   </div>
@@ -678,15 +691,15 @@ header h1 {
 <div class="section-head">專案時程</div>
 <div class="period-bar-wrap">
   <div class="period-dates">
-    <span>啟動 2026/01/24</span>
+    <span>啟動 <span class="editable-date" id="periodStart" contenteditable="true">YYYY/MM/DD</span></span>
     <span id="todayMark">今天</span>
-    <span>6個月目標 2026/07/24</span>
+    <span>目標 <span class="editable-date" id="periodEnd" contenteditable="true">YYYY/MM/DD</span></span>
   </div>
   <div class="period-track">
     <div class="period-fill" id="periodFill" style="width:0%"></div>
   </div>
   <div class="period-info">
-    <span class="period-elapsed" id="periodElapsed">計算中…</span>
+    <span class="period-elapsed" id="periodElapsed">請填入起始與目標日期</span>
     <span class="period-remain" id="periodRemain"></span>
   </div>
 </div>
@@ -696,58 +709,58 @@ header h1 {
 <div class="kpi-grid">
 
   <div class="kpi-card kpi-green" onclick="editKpi(this)">
-    <div class="kpi-label">前15名 銷售總量 <span class="edit-hint">點擊編輯</span></div>
-    <div class="kpi-value" id="kpi-qty" contenteditable="false">228</div>
-    <div class="kpi-sub">件（Jan 24 – Apr 24）</div>
-    <div class="kpi-delta delta-flat" id="kpi-qty-delta">— 基準期，等待 Apr–Jul 數據</div>
+    <div class="kpi-label">重點品項 銷售總量 <span class="edit-hint">點擊編輯</span></div>
+    <div class="kpi-value" id="kpi-qty" contenteditable="false">—</div>
+    <div class="kpi-sub">件（填入統計區間）</div>
+    <div class="kpi-delta delta-flat" id="kpi-qty-delta">— 待填入對照區間</div>
   </div>
 
   <div class="kpi-card kpi-blue" onclick="editKpi(this)">
-    <div class="kpi-label">前15名 銷售總額 <span class="edit-hint">點擊編輯</span></div>
-    <div class="kpi-value" id="kpi-amt" contenteditable="false">17.6萬</div>
-    <div class="kpi-sub">元（3個月合計）</div>
-    <div class="kpi-delta delta-flat" id="kpi-amt-delta">— 月均 5.9萬元基準</div>
+    <div class="kpi-label">重點品項 銷售總額 <span class="edit-hint">點擊編輯</span></div>
+    <div class="kpi-value" id="kpi-amt" contenteditable="false">—</div>
+    <div class="kpi-sub">元（填入統計區間）</div>
+    <div class="kpi-delta delta-flat" id="kpi-amt-delta">— 待填入月均基準</div>
   </div>
 
   <div class="kpi-card kpi-orange" onclick="editKpi(this)">
     <div class="kpi-label">陳列到位率 <span class="edit-hint">點擊編輯</span></div>
-    <div class="kpi-value" id="kpi-display" contenteditable="false">67%</div>
-    <div class="kpi-sub">15品項中 10 項已陳列</div>
-    <div class="kpi-delta delta-flat">目標 90%</div>
+    <div class="kpi-value" id="kpi-display" contenteditable="false">—</div>
+    <div class="kpi-sub">已陳列品項 / 全部品項</div>
+    <div class="kpi-delta delta-flat">目標待設定</div>
   </div>
 
   <div class="kpi-card kpi-purple" onclick="editKpi(this)">
     <div class="kpi-label">建議執行率 <span class="edit-hint">點擊編輯</span></div>
-    <div class="kpi-value" id="kpi-exec" contenteditable="false">40%</div>
-    <div class="kpi-sub">6 條建議中 2~3 已實施</div>
-    <div class="kpi-delta delta-flat">目標本月達 70%</div>
+    <div class="kpi-value" id="kpi-exec" contenteditable="false">—</div>
+    <div class="kpi-sub">已完成建議 / 建議總數</div>
+    <div class="kpi-delta delta-flat">目標待設定</div>
   </div>
 
   <div class="kpi-card kpi-teal" onclick="editKpi(this)">
-    <div class="kpi-label">充電器類佔比 <span class="edit-hint">點擊編輯</span></div>
-    <div class="kpi-value" id="kpi-charger" contenteditable="false">38%</div>
-    <div class="kpi-sub">數量佔前15名 87件</div>
-    <div class="kpi-delta delta-flat">需追蹤是否陳列改善後提升</div>
+    <div class="kpi-label">主力品類佔比 <span class="edit-hint">點擊編輯</span></div>
+    <div class="kpi-value" id="kpi-charger" contenteditable="false">—</div>
+    <div class="kpi-sub">數量佔重點品項之比</div>
+    <div class="kpi-delta delta-flat">陳列調整後再追蹤</div>
   </div>
 
   <div class="kpi-card kpi-red" onclick="editKpi(this)">
     <div class="kpi-label">缺貨/陳列遺漏品項 <span class="edit-hint">點擊編輯</span></div>
-    <div class="kpi-value" id="kpi-missing" contenteditable="false">2</div>
-    <div class="kpi-sub">UAG 保護殼、PG Apple Watch 殼</div>
-    <div class="kpi-delta delta-down">↓ 需立即補貨上架</div>
+    <div class="kpi-value" id="kpi-missing" contenteditable="false">—</div>
+    <div class="kpi-sub">待填入未陳列或需補貨的品項</div>
+    <div class="kpi-delta delta-flat">確認庫存後再補位</div>
   </div>
 
   <div class="kpi-card kpi-blue" onclick="editKpi(this)">
     <div class="kpi-label">資料更新週期 <span class="edit-hint">點擊編輯</span></div>
-    <div class="kpi-value" id="kpi-update" contenteditable="false">3月</div>
-    <div class="kpi-sub">目前每季匯入一次</div>
-    <div class="kpi-delta delta-down">↓ 建議調整為每月</div>
+    <div class="kpi-value" id="kpi-update" contenteditable="false">—</div>
+    <div class="kpi-sub">目前的匯入頻率</div>
+    <div class="kpi-delta delta-flat">可依門市調整</div>
   </div>
 
   <div class="kpi-card kpi-green" onclick="editKpi(this)">
-    <div class="kpi-label">STM 觸控筆 銷售額 <span class="edit-hint">點擊編輯</span></div>
-    <div class="kpi-value" id="kpi-stm" contenteditable="false">19,020</div>
-    <div class="kpi-sub">元 | 單品冠軍（20件）</div>
+    <div class="kpi-label">重點單品 銷售額 <span class="edit-hint">點擊編輯</span></div>
+    <div class="kpi-value" id="kpi-focus" contenteditable="false">—</div>
+    <div class="kpi-sub">元｜填入單品名稱</div>
     <div class="kpi-delta delta-flat">— 陳列改善後追蹤此項</div>
   </div>
 
@@ -830,7 +843,7 @@ header h1 {
     </div>
     <div class="compare-note-wrap">
       <textarea class="compare-note" id="compareNote" rows="1"
-        placeholder="輸入本次陳列調整備註（例：STM 移至正前方，充電器集中第一排）…"></textarea>
+        placeholder="輸入本次陳列調整備註（例：重點單品移至正前方，同類配件集中第一排）…"></textarea>
     </div>
     <button class="btn btn-primary" style="padding:6px 14px;font-size:12px;flex-shrink:0" onclick="saveCompare()">💾 儲存對比</button>
   </div>
@@ -862,35 +875,35 @@ header h1 {
     <div class="progress-item">
       <div class="progress-label">
         <span class="progress-name">銷售數據匯入</span>
-        <span class="progress-val">100%</span>
+        <span class="progress-val">待填</span>
       </div>
-      <div class="progress-track"><div class="progress-fill" style="width:100%;background:var(--green)"></div></div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--green)"></div></div>
     </div>
     <div class="progress-item">
       <div class="progress-label">
         <span class="progress-name">品項分類標籤</span>
-        <span class="progress-val">100%</span>
+        <span class="progress-val">待填</span>
       </div>
-      <div class="progress-track"><div class="progress-fill" style="width:100%;background:var(--green)"></div></div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--green)"></div></div>
     </div>
     <div class="progress-item">
       <div class="progress-label">
         <span class="progress-name">陳列狀態記錄</span>
-        <span class="progress-val">80%</span>
+        <span class="progress-val">待填</span>
       </div>
-      <div class="progress-track"><div class="progress-fill" style="width:80%;background:var(--blue)"></div></div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--blue)"></div></div>
     </div>
     <div class="progress-item">
       <div class="progress-label">
         <span class="progress-name">花車照片存檔</span>
-        <span class="progress-val">50%</span>
+        <span class="progress-val">待填</span>
       </div>
-      <div class="progress-track"><div class="progress-fill" style="width:50%;background:var(--orange)"></div></div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--orange)"></div></div>
     </div>
     <div class="progress-item">
       <div class="progress-label">
         <span class="progress-name">月份環比追蹤</span>
-        <span class="progress-val">0%</span>
+        <span class="progress-val">待填</span>
       </div>
       <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--red)"></div></div>
     </div>
@@ -903,36 +916,36 @@ header h1 {
     </div>
     <div class="progress-item">
       <div class="progress-label">
-        <span class="progress-name">充電器正面中央位</span>
-        <span class="progress-val">待確認</span>
+        <span class="progress-name">主力品類正面中央位</span>
+        <span class="progress-val">待填</span>
       </div>
-      <div class="progress-track"><div class="progress-fill" style="width:50%;background:var(--orange)"></div></div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--orange)"></div></div>
     </div>
     <div class="progress-item">
       <div class="progress-label">
-        <span class="progress-name">STM 觸控筆 最顯眼位</span>
-        <span class="progress-val">待執行</span>
+        <span class="progress-name">高單價配件 最顯眼位</span>
+        <span class="progress-val">待填</span>
       </div>
-      <div class="progress-track"><div class="progress-fill" style="width:20%;background:var(--red)"></div></div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--red)"></div></div>
     </div>
     <div class="progress-item">
       <div class="progress-label">
-        <span class="progress-name">Type-C / Lightning 分區標示</span>
-        <span class="progress-val">待執行</span>
+        <span class="progress-name">配件分區標示</span>
+        <span class="progress-val">待填</span>
       </div>
-      <div class="progress-track"><div class="progress-fill" style="width:20%;background:var(--red)"></div></div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--red)"></div></div>
     </div>
     <div class="progress-item">
       <div class="progress-label">
-        <span class="progress-name">大通品牌專區</span>
-        <span class="progress-val">待規劃</span>
+        <span class="progress-name">主力品牌專區</span>
+        <span class="progress-val">待填</span>
       </div>
-      <div class="progress-track"><div class="progress-fill" style="width:10%;background:var(--red)"></div></div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--red)"></div></div>
     </div>
     <div class="progress-item">
       <div class="progress-label">
-        <span class="progress-name">UAG / PG 保護殼補位</span>
-        <span class="progress-val">未上架</span>
+        <span class="progress-name">缺貨品項補位</span>
+        <span class="progress-val">待填</span>
       </div>
       <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--red)"></div></div>
     </div>
@@ -945,36 +958,36 @@ header h1 {
     </div>
     <div class="progress-item">
       <div class="progress-label">
-        <span class="progress-name">月份銷售量環比 +10%</span>
-        <span class="progress-val">等待 May 數據</span>
+        <span class="progress-name">月份銷售量環比達標</span>
+        <span class="progress-val">待填門檻</span>
       </div>
-      <div class="progress-track"><div class="progress-fill" style="width:5%;background:var(--sub)"></div></div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--sub)"></div></div>
     </div>
     <div class="progress-item">
       <div class="progress-label">
-        <span class="progress-name">STM 觸控筆月銷 ≥7件</span>
-        <span class="progress-val">等待追蹤</span>
+        <span class="progress-name">重點單品月銷達標</span>
+        <span class="progress-val">待填門檻</span>
       </div>
-      <div class="progress-track"><div class="progress-fill" style="width:5%;background:var(--sub)"></div></div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--sub)"></div></div>
     </div>
     <div class="progress-item">
       <div class="progress-label">
-        <span class="progress-name">充電器月銷量 ≥30件</span>
-        <span class="progress-val">等待追蹤</span>
+        <span class="progress-name">主力品類月銷達標</span>
+        <span class="progress-val">待填門檻</span>
       </div>
-      <div class="progress-track"><div class="progress-fill" style="width:5%;background:var(--sub)"></div></div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--sub)"></div></div>
     </div>
     <div class="progress-item">
       <div class="progress-label">
-        <span class="progress-name">行動電源金額月均 ≥14000</span>
-        <span class="progress-val">等待追蹤</span>
+        <span class="progress-name">高單價配件金額達標</span>
+        <span class="progress-val">待填門檻</span>
       </div>
-      <div class="progress-track"><div class="progress-fill" style="width:5%;background:var(--sub)"></div></div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--sub)"></div></div>
     </div>
     <div class="progress-item">
       <div class="progress-label">
-        <span class="progress-name">保護殼 UAG 月銷 ≥5件</span>
-        <span class="progress-val">等待上架</span>
+        <span class="progress-name">保護類月銷達標</span>
+        <span class="progress-val">待填門檻</span>
       </div>
       <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--red)"></div></div>
     </div>
@@ -988,42 +1001,42 @@ header h1 {
     <div class="timeline">
 
       <div class="milestone">
-        <div class="milestone-dot dot-done"></div>
-        <div class="milestone-date">2026/01/24</div>
-        <div class="milestone-title">啟動 & 數據基準建立</div>
-        <div class="milestone-desc">Jan–Apr 三個月銷售資料匯入，品項分類完成</div>
-        <span class="milestone-tag tag-done">✅ 完成</span>
-      </div>
-
-      <div class="milestone">
-        <div class="milestone-dot dot-done"></div>
-        <div class="milestone-date">2026/04/25</div>
-        <div class="milestone-title">陳列建議 Dashboard 上線</div>
-        <div class="milestone-desc">花車陳列可視化、6條建議產出、Excel 匯入功能</div>
-        <span class="milestone-tag tag-done">✅ 完成</span>
-      </div>
-
-      <div class="milestone">
-        <div class="milestone-dot dot-active"></div>
-        <div class="milestone-date">2026/05 月底</div>
-        <div class="milestone-title">Phase 2：陳列執行 & 首次對比</div>
-        <div class="milestone-desc">完成花車重新佈局、上傳新照片、補齊缺陷品項</div>
-        <span class="milestone-tag tag-active">🔵 進行中</span>
-      </div>
-
-      <div class="milestone">
         <div class="milestone-dot dot-pending"></div>
-        <div class="milestone-date">2026/06/24</div>
-        <div class="milestone-title">第一次成效驗收（Month 2 後）</div>
-        <div class="milestone-desc">匯入 5–6 月數據、與基準期比較、調整陳列策略</div>
+        <div class="milestone-date editable-date" contenteditable="true">YYYY/MM/DD</div>
+        <div class="milestone-title">啟動與數據基準建立</div>
+        <div class="milestone-desc">匯入一段銷售資料，完成品項分類</div>
         <span class="milestone-tag tag-pending">⏳ 待開始</span>
       </div>
 
       <div class="milestone">
         <div class="milestone-dot dot-pending"></div>
-        <div class="milestone-date">2026/07/24</div>
-        <div class="milestone-title">6 個月總檢討 & 下季規劃</div>
-        <div class="milestone-desc">成效報告、配件資料庫擴充、下一批品項建議</div>
+        <div class="milestone-date editable-date" contenteditable="true">YYYY/MM/DD</div>
+        <div class="milestone-title">陳列建議上線</div>
+        <div class="milestone-desc">整理陳列建議，確認資料可以匯入</div>
+        <span class="milestone-tag tag-pending">⏳ 待開始</span>
+      </div>
+
+      <div class="milestone">
+        <div class="milestone-dot dot-pending"></div>
+        <div class="milestone-date editable-date" contenteditable="true">YYYY/MM/DD</div>
+        <div class="milestone-title">陳列執行與首次對比</div>
+        <div class="milestone-desc">調整佈局、上傳新照片、補齊缺項</div>
+        <span class="milestone-tag tag-pending">⏳ 待開始</span>
+      </div>
+
+      <div class="milestone">
+        <div class="milestone-dot dot-pending"></div>
+        <div class="milestone-date editable-date" contenteditable="true">YYYY/MM/DD</div>
+        <div class="milestone-title">第一次成效驗收</div>
+        <div class="milestone-desc">匯入新區間數據，與基準期比較後調整陳列</div>
+        <span class="milestone-tag tag-pending">⏳ 待開始</span>
+      </div>
+
+      <div class="milestone">
+        <div class="milestone-dot dot-pending"></div>
+        <div class="milestone-date editable-date" contenteditable="true">YYYY/MM/DD</div>
+        <div class="milestone-title">階段總檢討與下季規劃</div>
+        <div class="milestone-desc">整理成效，擴充配件資料，規劃下一批品項</div>
         <span class="milestone-tag tag-pending">⏳ 待開始</span>
       </div>
 
@@ -1039,40 +1052,40 @@ header h1 {
   <div class="insight insight-crit">
     <div class="insight-tag">🚨 關鍵缺口</div>
     <div class="insight-body">
-      <b>尚無「執行前後」對比數據</b>：dashboard 建立了基準，但陳列改動若無記錄時間點，無法驗證建議是否真的帶動銷售。
-      → 建議本週拍下「現況花車全景」作為 Before 照存入系統，下個月 After 才有比較基準。
+      <b>先留下「執行前後」對比</b>：陳列改動若沒有記錄時間點，之後無法判斷建議有沒有帶動銷售。
+      → 先拍下目前花車全景作為 Before，下次調整後再拍 After。
     </div>
   </div>
 
   <div class="insight insight-warn">
     <div class="insight-tag">⚡ 風險</div>
     <div class="insight-body">
-      <b>資料更新頻率太低（每季）</b>：商品銷售快速，3個月才看一次，中間發現的趨勢會被延遲。
-      → 建議每月月初更新一次，只需 5 分鐘匯入 Excel，就能每月看到變化。
+      <b>更新間隔不要拉太長</b>：隔太久才看一次，中間的變化會被延遲。
+      → 固定一個門市做得到的週期匯入銷售表，才能看到變化。
     </div>
   </div>
 
   <div class="insight insight-warn">
     <div class="insight-tag">⚡ 需補齊</div>
     <div class="insight-body">
-      <b>UAG 保護殼 & PG Apple Watch 殼 目前未上架陳列</b>：排名 14、15 但花車完全看不到，等於白白浪費這兩個排名的潛力。
-      → 建議本週確認庫存後立即補上，並在系統將狀態從「missing」更新為「present」。
+      <b>有銷售但未陳列的品項先補位</b>：賣得出去、架子上看不到，等於把需求留在倉庫。
+      → 確認庫存後補上，再把陳列狀態改成已上架。
     </div>
   </div>
 
   <div class="insight insight-good">
     <div class="insight-tag">✅ 優勢</div>
     <div class="insight-body">
-      <b>大通品牌 5 款入榜</b>，是最大品牌集中度，已有基礎建立品牌專區的條件。
-      搭配 ADAM 形成雙品牌對比展示，可以縮短顧客選購時間，預期提升充電器類成交率。
+      <b>同一品牌若有多款同時突出</b>，適合集中成品牌專區。
+      旁邊留一個對照品牌並排，可以縮短顧客比較的時間。
     </div>
   </div>
 
   <div class="insight insight-info">
     <div class="insight-tag">📌 建議</div>
     <div class="insight-body">
-      <b>下一步：建立月份追蹤 Sheet</b>。每月月底紀錄：前15名銷售量/金額/陳列狀態，
-      3個月後就能看出「哪個品項因為陳列改善而提升了」。這是讓這個專案真正產生 ROI 的關鍵。
+      <b>建立月份追蹤表</b>。每期紀錄：重點品項的銷售量、金額、陳列狀態。
+      累積數期之後，才能看出哪些品項是因為陳列調整而變化。
     </div>
   </div>
 
@@ -1094,8 +1107,8 @@ header h1 {
   <div class="action-item">
     <div class="action-num high">H</div>
     <div class="action-content">
-      <div class="action-title">STM 觸控筆移位至花車最顯眼位置</div>
-      <div class="action-desc">單品金額最高 $19,020，卻不在黃金區，是目前最大機會成本</div>
+      <div class="action-title">高單價配件移到花車最顯眼的位置</div>
+      <div class="action-desc">貢獻高卻不在黃金區時，優先調整陳列</div>
     </div>
     <div class="action-due">本週內</div>
   </div>
@@ -1103,8 +1116,8 @@ header h1 {
   <div class="action-item">
     <div class="action-num high">H</div>
     <div class="action-content">
-      <div class="action-title">確認 UAG / PG 保護殼庫存，安排補位上架</div>
-      <div class="action-desc">排名 14、15 卻完全不在陳列，需要今天確認庫存數量</div>
+      <div class="action-title">確認缺貨或未陳列品項，安排補位上架</div>
+      <div class="action-desc">有銷量但架子上看不到時，先核對庫存再上架</div>
     </div>
     <div class="action-due">今天</div>
   </div>
@@ -1112,8 +1125,8 @@ header h1 {
   <div class="action-item">
     <div class="action-num mid">M</div>
     <div class="action-content">
-      <div class="action-title">製作充電線 Type-C（綠）/ Lightning（粉）分區標牌</div>
-      <div class="action-desc">解決顧客容易混淆的問題，降低詢問次數</div>
+      <div class="action-title">依配件類型製作分區標牌</div>
+      <div class="action-desc">讓顧客比較快找到對的類型，減少詢問</div>
     </div>
     <div class="action-due">本週</div>
   </div>
@@ -1121,8 +1134,8 @@ header h1 {
   <div class="action-item">
     <div class="action-num mid">M</div>
     <div class="action-content">
-      <div class="action-title">建立「月份追蹤 Sheet」，記錄 May 2026 銷售數字</div>
-      <div class="action-desc">格式：日期 | 品名 | 當月銷售量 | 當月金額 | 陳列狀態</div>
+      <div class="action-title">建立月份追蹤表，記錄下一期銷售</div>
+      <div class="action-desc">欄位：日期、品名、當期銷售量、當期金額、陳列狀態</div>
     </div>
     <div class="action-due">月底前</div>
   </div>
@@ -1130,8 +1143,8 @@ header h1 {
   <div class="action-item">
     <div class="action-num low">L</div>
     <div class="action-content">
-      <div class="action-title">規劃「大通品牌快充專區」空間配置</div>
-      <div class="action-desc">5款同品牌集中展示，旁邊放 ADAM 形成對比選購區</div>
+      <div class="action-title">規劃主力品牌專區的位置</div>
+      <div class="action-desc">同品牌集中，旁邊留對照品牌，方便比較</div>
     </div>
     <div class="action-due">下週</div>
   </div>
@@ -1139,86 +1152,86 @@ header h1 {
 </div>
 
 <!-- ── 核對清單 ── -->
-<div class="section-head">Phase 2 核對清單</div>
+<div class="section-head">執行核對清單</div>
 <div class="checklist" id="checklist">
 
-  <div class="check-item done" onclick="toggleCheck(this)">
-    <div class="check-dot">✓</div>
+  <div class="check-item todo" onclick="toggleCheck(this)">
+    <div class="check-dot"></div>
     <div class="check-text">
-      <div class="check-title">銷售數據 Excel 匯入 Dashboard</div>
-      <div class="check-sub">2026/01/24–04/24，前15名品項完整</div>
-    </div>
-  </div>
-
-  <div class="check-item done" onclick="toggleCheck(this)">
-    <div class="check-dot">✓</div>
-    <div class="check-text">
-      <div class="check-title">陳列建議 6 條產出並可查閱</div>
-      <div class="check-sub">Dashboard「建議行動」Tab 已完整</div>
-    </div>
-  </div>
-
-  <div class="check-item done" onclick="toggleCheck(this)">
-    <div class="check-dot">✓</div>
-    <div class="check-text">
-      <div class="check-title">成效追蹤 Dashboard 建立（本頁）</div>
-      <div class="check-sub">KPI、里程碑、待辦清單整合完成</div>
-    </div>
-  </div>
-
-  <div class="check-item warn" onclick="toggleCheck(this)">
-    <div class="check-dot">!</div>
-    <div class="check-text">
-      <div class="check-title">花車「改版前」照片存檔</div>
-      <div class="check-sub">需本週拍攝並上傳，作為 Before 基準</div>
+      <div class="check-title">匯入本期銷售資料</div>
+      <div class="check-sub">區間內的重點品項匯入後再核對</div>
     </div>
   </div>
 
   <div class="check-item todo" onclick="toggleCheck(this)">
     <div class="check-dot"></div>
     <div class="check-text">
-      <div class="check-title">STM 觸控筆移至黃金陳列位</div>
-      <div class="check-sub">花車正前方最顯眼位置，附磁吸說明小卡</div>
+      <div class="check-title">整理陳列建議並可查閱</div>
+      <div class="check-sub">建議事項放在頁面上追蹤</div>
     </div>
   </div>
 
   <div class="check-item todo" onclick="toggleCheck(this)">
     <div class="check-dot"></div>
     <div class="check-text">
-      <div class="check-title">充電器調至正面中央第一排</div>
-      <div class="check-sub">大通 GaN 系列並排，標示「快充 GaN 氮化鎵」</div>
+      <div class="check-title">確認本頁可以編輯並儲存</div>
+      <div class="check-sub">KPI、里程碑、待辦可依門市更新</div>
     </div>
   </div>
 
   <div class="check-item todo" onclick="toggleCheck(this)">
     <div class="check-dot"></div>
     <div class="check-text">
-      <div class="check-title">UAG / PG 保護殼補位上架</div>
-      <div class="check-sub">確認庫存，陳列後在 Dashboard 更新狀態</div>
+      <div class="check-title">拍攝並上傳改版前照片</div>
+      <div class="check-sub">作為之後對照的基準</div>
     </div>
   </div>
 
   <div class="check-item todo" onclick="toggleCheck(this)">
     <div class="check-dot"></div>
     <div class="check-text">
-      <div class="check-title">5 月銷售數據匯入 & 環比比較</div>
-      <div class="check-sub">目標：2026/06/05 完成匯入並觀察變化</div>
+      <div class="check-title">高單價配件移至黃金陳列位</div>
+      <div class="check-sub">放在最顯眼處，必要時附簡短說明</div>
     </div>
   </div>
 
   <div class="check-item todo" onclick="toggleCheck(this)">
     <div class="check-dot"></div>
     <div class="check-text">
-      <div class="check-title">建立月份追蹤表（Numbers / Excel）</div>
-      <div class="check-sub">逐月記錄各品項銷售量與陳列狀態變化</div>
+      <div class="check-title">主力品類調至正面中央</div>
+      <div class="check-sub">同系列並排，標示清楚類別</div>
     </div>
   </div>
 
   <div class="check-item todo" onclick="toggleCheck(this)">
     <div class="check-dot"></div>
     <div class="check-text">
-      <div class="check-title">第一次成效驗收報告（6月底）</div>
-      <div class="check-sub">對比基準期與 May–Jun 數據，輸出成效說明</div>
+      <div class="check-title">缺貨或未陳列品項補位上架</div>
+      <div class="check-sub">確認庫存後，更新陳列狀態</div>
+    </div>
+  </div>
+
+  <div class="check-item todo" onclick="toggleCheck(this)">
+    <div class="check-dot"></div>
+    <div class="check-text">
+      <div class="check-title">匯入下一期銷售並做環比</div>
+      <div class="check-sub">與基準期比較，觀察變化</div>
+    </div>
+  </div>
+
+  <div class="check-item todo" onclick="toggleCheck(this)">
+    <div class="check-dot"></div>
+    <div class="check-text">
+      <div class="check-title">建立月份追蹤表</div>
+      <div class="check-sub">逐期記錄銷售量與陳列狀態</div>
+    </div>
+  </div>
+
+  <div class="check-item todo" onclick="toggleCheck(this)">
+    <div class="check-dot"></div>
+    <div class="check-text">
+      <div class="check-title">完成第一次成效驗收</div>
+      <div class="check-sub">對比基準期與新區間，整理說明</div>
     </div>
   </div>
 
@@ -1485,35 +1498,85 @@ function saveCompare() {
 // ══════════════════════════════════════════
 //  時程計算
 // ══════════════════════════════════════════
-(function initTimeline() {
-  const start = new Date('2026-01-24');
-  const end   = new Date('2026-07-24');
+function parseProjectDate(text) {
+  const m = String(text || '').trim().match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})$/);
+  if (!m) return null;
+  const y = Number(m[1]), mo = Number(m[2]), d = Number(m[3]);
+  const date = new Date(y, mo - 1, d);
+  if (Number.isNaN(date.getTime())) return null;
+  if (date.getFullYear() !== y || date.getMonth() !== mo - 1 || date.getDate() !== d) return null;
+  return date;
+}
+
+function renderTimeline() {
+  const startEl = document.getElementById('periodStart');
+  const endEl = document.getElementById('periodEnd');
+  const fill = document.getElementById('periodFill');
+  const elapsedEl = document.getElementById('periodElapsed');
+  const remainEl = document.getElementById('periodRemain');
+  const headerStart = document.getElementById('headerStart');
+  if (!startEl || !endEl || !fill || !elapsedEl || !remainEl) return;
+
+  const startText = startEl.textContent.trim();
+  const endText = endEl.textContent.trim();
+  const start = parseProjectDate(startText);
+  const end = parseProjectDate(endText);
+  if (headerStart) headerStart.textContent = start ? startText : '待設定';
+
+  if (!start || !end || end.getTime() <= start.getTime()) {
+    fill.style.width = '0%';
+    elapsedEl.textContent = '請填入起始與目標日期（YYYY/MM/DD）';
+    remainEl.textContent = '';
+    return;
+  }
+
   const today = new Date();
-  const total = end - start;
-  const elapsed = Math.max(0, Math.min(today - start, total));
+  const total = end.getTime() - start.getTime();
+  const elapsed = Math.max(0, Math.min(today.getTime() - start.getTime(), total));
   const pct = (elapsed / total * 100).toFixed(1);
+  fill.style.width = pct + '%';
+  const daysElapsed = Math.floor(elapsed / 86400000);
+  const daysRemain = Math.ceil((end.getTime() - today.getTime()) / 86400000);
+  elapsedEl.textContent = `已進行 ${daysElapsed} 天（${pct}%）`;
+  remainEl.textContent = daysRemain > 0 ? `距目標還有 ${daysRemain} 天` : '已超過目標日期';
+}
 
-  document.getElementById('periodFill').style.width = pct + '%';
-
-  const days_elapsed = Math.floor(elapsed / 86400000);
-  const days_remain  = Math.ceil((end - today) / 86400000);
-  document.getElementById('periodElapsed').textContent = `已進行 ${days_elapsed} 天（${pct}%）`;
-  document.getElementById('periodRemain').textContent = days_remain > 0 ? `距目標還有 ${days_remain} 天` : '已超過目標日期';
-})();
+document.querySelectorAll('.editable-date').forEach(el => {
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); el.blur(); }
+  });
+});
+document.getElementById('periodStart').addEventListener('blur', renderTimeline);
+document.getElementById('periodEnd').addEventListener('blur', renderTimeline);
+renderTimeline();
 
 // ══════════════════════════════════════════
 //  Score ring animation
 // ══════════════════════════════════════════
-(function animateScore() {
-  const score = parseInt(localStorage.getItem('tracker_score') || '72');
-  document.getElementById('scoreNum').textContent = score;
-  const r = 46, circ = 2 * Math.PI * r;
+function applyScoreDisplay(score, animate) {
+  const el = document.getElementById('scoreNum');
   const ring = document.getElementById('scoreRing');
+  const circ = 2 * Math.PI * 46;
   ring.style.strokeDasharray = circ;
-  ring.style.strokeDashoffset = circ;
-  setTimeout(() => {
-    ring.style.strokeDashoffset = circ * (1 - score / 100);
-  }, 200);
+  if (!Number.isFinite(score)) {
+    el.textContent = '—';
+    ring.style.strokeDashoffset = circ;
+    return;
+  }
+  el.textContent = String(score);
+  const target = circ * (1 - score / 100);
+  if (animate) {
+    ring.style.strokeDashoffset = circ;
+    setTimeout(() => { ring.style.strokeDashoffset = target; }, 200);
+  } else {
+    ring.style.strokeDashoffset = target;
+  }
+}
+
+(function animateScore() {
+  const raw = localStorage.getItem('tracker_score');
+  const score = raw === null || String(raw).trim() === '' ? NaN : parseInt(raw, 10);
+  applyScoreDisplay(score, Number.isFinite(score));
 })();
 
 // ══════════════════════════════════════════
@@ -1538,6 +1601,19 @@ function loadState() {
       const items = document.querySelectorAll('.check-item');
       items.forEach((el, i) => {
         if (state.checks[i] !== undefined) applyCheckState(el, state.checks[i]);
+      });
+    }
+
+    if (state.timeline) {
+      if (state.timeline.start) document.getElementById('periodStart').textContent = state.timeline.start;
+      if (state.timeline.end) document.getElementById('periodEnd').textContent = state.timeline.end;
+      if (state.timeline.phase) document.getElementById('headerPhase').textContent = state.timeline.phase;
+      renderTimeline();
+    }
+
+    if (Array.isArray(state.milestones)) {
+      document.querySelectorAll('.milestone-date').forEach((el, i) => {
+        if (state.milestones[i]) el.textContent = state.milestones[i];
       });
     }
 
@@ -1595,10 +1671,8 @@ function updateScore() {
   const pct = Math.round(done / items.length * 100);
   // Map checklist progress to 0-100 score range
   const score = Math.min(100, Math.round(40 + pct * 0.6));
-  document.getElementById('scoreNum').textContent = score;
-  const r = 46, circ = 2 * Math.PI * r;
-  document.getElementById('scoreRing').style.strokeDashoffset = circ * (1 - score / 100);
-  localStorage.setItem('tracker_score', score);
+  applyScoreDisplay(score, false);
+  localStorage.setItem('tracker_score', String(score));
 }
 
 // ══════════════════════════════════════════
@@ -1616,7 +1690,14 @@ function saveProgress() {
       checks.push(el.classList.contains('done') ? 'done' : el.classList.contains('warn') ? 'warn' : 'todo');
     });
 
-    localStorage.setItem('tracker_v2', JSON.stringify({ kpis, checks }));
+    const timeline = {
+      start: document.getElementById('periodStart').textContent.trim(),
+      end: document.getElementById('periodEnd').textContent.trim(),
+      phase: document.getElementById('headerPhase').textContent.trim()
+    };
+    const milestones = [...document.querySelectorAll('.milestone-date')].map(el => el.textContent.trim());
+
+    localStorage.setItem('tracker_v2', JSON.stringify({ kpis, checks, timeline, milestones }));
     const ts = new Date().toLocaleString('zh-TW', { hour12: false });
     localStorage.setItem('tracker_saved', ts);
     document.getElementById('savedLabel').textContent = '上次儲存：' + ts;
@@ -1645,7 +1726,7 @@ function exportNote() {
     `專案健康度：${score}/100`,
     ``,
     `📊 核心數字`,
-    `• 前15名銷售量：${qty}`,
+    `• 重點品項銷售量：${qty}`,
     `• 銷售總額：${amt}`,
     `• 陳列到位率：${disp}`,
     `• 建議執行率：${exec}`,
